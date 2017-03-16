@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    
+    <link rel="stylesheet" type="text/css" href="assets/css/style.css">
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.2.0.js"></script>
+  </head>
+  <body>
+    <div class = "container">
+      <div class="jumbotron text-center">
+        <h1>Anytime is Train Time</h1>
+        <p>Choo Choo. Chee Chee.</p>
+        
+      </div>
+      
+      
+      <div id = "data">
+        <!--Current Train Schedule -->
+        <div class="row">
+          <div class="col-md-12">
+            <div class="panel panel-primary">
+              <div class="panel-heading"></div>
+              <div class="panel-body" id="current">
+                
+                <!-- Table -->
+                <table class="table">
+                  <thead>
+                  <tr>
+                    <th>Train Name</th>
+                    <th>Destination</th>
+                    <th>Frequency (min)</th>
+                    <th>Next Arrival</th>
+                    <th>Minutes Away</th>
+                  </tr>
+                  </thead>
+                  <tbody id="newEmployee">
+                    
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!--Add Train -->
+        <div class="row">
+          <div class="col-md-12">
+            <div class="panel panel-primary">
+              <div class="panel-heading">Add Train</div>
+              <div class="panel-body" id="addTrain">
+                <form>
+                  <div class="form-group">
+                    <label for="name">Train Name</label>
+                    <input type="text" class="form-control" id="name">
+                  </div>
+                  <div class="form-group">
+                    <label for="destination">Destination</label>
+                    <input type="text" class="form-control" id="destination">
+                  </div>
+                  <div class="form-group">
+                    <label for="firstTrain">First Train Time (HH:mm-military time)</label>
+                    <input type="text" class="form-control" id="firstTrain">
+                  </div>
+                  
+                  <div class="form-group">
+                    <label for="frequency">Frequency (min)</label>
+                    <input type="text" class="form-control" id="frequency">
+                  </div>
+                  
+                  <button type="submit" class="btn btn-primary" id="add-train">Submit</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      
+     <script src="https://www.gstatic.com/firebasejs/3.7.1/firebase.js"></script>
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyDn_KRLoDi9JGaaPg-pdCTLT2_ayrVegRo",
+    authDomain: "train-scheduler-13939.firebaseapp.com",
+    databaseURL: "https://train-scheduler-13939.firebaseio.com",
+    storageBucket: "train-scheduler-13939.appspot.com",
+    messagingSenderId: "1097090267560"
+  };
+  firebase.initializeApp(config);
+
+
+
+var database = firebase.database();
+
+    // Initial Values
+    var name = "";
+    var destination = "";
+    var firstTrain = 0;
+    var frequency = "";
+
+
+     // Capture Button Click
+    $("#add-train").on("click", function(event) {
+      event.preventDefault();
+
+      // Grabbed values from text-boxes
+      name = $("#name").val().trim();
+      destination = $("#destination").val().trim();
+      firstTrain = $("#firstTrain").val().trim();
+      frequency = $("#frequency").val().trim();
+
+      // Code for "Setting values in the database"
+      database.ref().push({
+        name: name,
+        destination: destination,
+        firstTrain: firstTrain,
+        frequency: frequency,
+        dateAdded: firebase.database.ServerValue.TIMESTAMP //tracks when informatcion is added to database
+      });
+
+      database.ref().on("child_added", function(childSnapshot){
+        // Log everything that's coming out of snapshot
+      console.log(childSnapshot.val().name);
+      console.log(childSnapshot.val().role);
+      console.log(childSnapshot.val().startDate);
+      console.log(childSnapshot.val().monthlyRate);
+
+      // full list of items to the well
+      $("#newEmployee").append("<div class='well'><span id='name'> " + childSnapshot.val().name +
+        " </span><span id='role'> " + childSnapshot.val().destination +
+        " </span><span id='startDate'> " + childSnapshot.val().firstTrain +
+        " </span><span id='monthlyRate'> " + childSnapshot.val().frequency + " </span></div>");
+
+
+      })
+
+    });
+</script>
+    </body>
+  </html>
